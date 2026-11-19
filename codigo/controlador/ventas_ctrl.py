@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from modelo.venta import Venta
 from modelo import persistencia
 from controlador import inventario_ctrl
@@ -11,6 +11,14 @@ def _siguiente_numero_factura(filas):
         except (TypeError, ValueError):
             continue
     return max(numeros, default=0) + 1
+def _fecha_de(fila):
+    texto = str(fila.get("fecha", "")).strip().replace("/", "-")
+    if not texto:
+        return None
+    try:
+        return date.fromisoformat(texto[:10])
+    except ValueError:
+        return None
 def preparar_linea(codigo, cantidad, lineas):
     productos, _ = inventario_ctrl.cargar_inventario_limpio(guardar=False)
     producto = inventario_ctrl.buscar_producto(productos, codigo)
@@ -93,6 +101,41 @@ def consultar_ventas_dia(fecha=None):
         if str(item["fila"].get("fecha", "")).startswith(fecha):
             filas.append(item["fila"])
     return filas
+def consultar_ventas_periodo(periodo, referencia=None):
+    hoy = referencia or date.today()
+    if periodo == "dia":
+        inicio = hoy
+    elif periodo == "semana":
+        inicio = hoy - timedelta(days=hoy.weekday())
+    elif periodo == "mes":
+        inicio = hoy.replace(day=1)
+    else:
+        raise ValueError("Periodo no valido: use dia, semana o mes.")
+    filas = []
+    for item in clasificar_ventas():
+        fecha_fila = _fecha_de(item["fila"])
+        if fecha_fila is None:
+            continue
+        if inicio <= fecha_fila <= hoy:
+            filas.append(item["fila"])
+    return inicio, hoy, filas
+def totales_por_producto(filas, productos=None):
+    nombres = {}
+    if productos:
+        for p in productos:
+            nombres[p["codigo"]] = p["nombre"]
+    totales = {}
+    for fila in filas:
+        codigo = str(fila.get("codigo_producto", "")).strip()
+        etiqueta = nombres.get(codigo, codigo)
+        try:
+            total = float(fila.get("total", 0))
+        except (TypeError, ValueError):
+            continue
+        totales[etiqueta] = round(totales.get(etiqueta, 0) + total, 2)
+    return totales
+def reiniciar_ventas():
+    return persistencia.respaldar_y_vaciar_ventas()
 def reporte_calidad_ventas():
     clasificadas = clasificar_ventas()
     return {

@@ -1,8 +1,10 @@
 import csv
 import os
+from datetime import datetime
 CARPETA_ACTUAL = os.path.dirname(os.path.abspath(__file__))
 CARPETA_CODIGO = os.path.dirname(CARPETA_ACTUAL)
 CARPETA_DATOS = os.path.join(CARPETA_CODIGO, "datos")
+CARPETA_RESPALDO = os.path.join(CARPETA_CODIGO, "datos_respaldo")
 RUTA_INVENTARIO = os.path.join(CARPETA_DATOS, "inventario.csv")
 RUTA_VENTAS = os.path.join(CARPETA_DATOS, "ventas.csv")
 ENCABEZADOS_INVENTARIO = [
@@ -76,3 +78,11 @@ def guardar_ventas(lista_ventas):
         fila = venta.to_dict() if hasattr(venta, "to_dict") else venta
         filas.append(fila)
     _escribir_csv_atomico(RUTA_VENTAS, ENCABEZADOS_VENTAS, filas)
+def respaldar_y_vaciar_ventas():
+    os.makedirs(CARPETA_RESPALDO, exist_ok=True)
+    marca = datetime.now().strftime("%Y%m%d_%H%M%S")
+    destino = os.path.join(CARPETA_RESPALDO, f"ventas_{marca}.csv")
+    if os.path.exists(RUTA_VENTAS):
+        os.replace(RUTA_VENTAS, destino)
+    crear_archivo_si_no_existe(RUTA_VENTAS, ENCABEZADOS_VENTAS)
+    return destino

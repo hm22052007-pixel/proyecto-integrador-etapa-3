@@ -83,7 +83,9 @@ def cargar_inventario_limpio(guardar=True):
             )
         if limpio["stock"] < 0:
             reporte["registros_marcados"] += 1
-            reporte["mensajes"].append(f"Fila {numero}: stock negativo.")
+            reporte["mensajes"].append(
+                f"Fila {numero}: stock negativo ({limpio['stock']})."
+            )
         productos.append(limpio)
     reporte["duplicados_detectados"] = len(productos) - len(
         {p["codigo"] for p in productos}
@@ -187,3 +189,17 @@ def generar_reporte_calidad(reporte):
         sum(p["stock"] * p["precio_compra"] for p in productos), 2
     )
     return reporte
+def eliminar_producto(codigo):
+    productos, _ = cargar_inventario_limpio(guardar=False)
+    codigo = str(codigo).strip().upper()
+    encontrado = None
+    restantes = []
+    for producto in productos:
+        if producto["codigo"] == codigo:
+            encontrado = producto
+        else:
+            restantes.append(producto)
+    if encontrado is None:
+        raise ValueError(f"No existe un producto con el código {codigo}.")
+    persistencia.guardar_inventario(restantes)
+    return encontrado

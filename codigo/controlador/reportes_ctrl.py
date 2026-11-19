@@ -1,6 +1,6 @@
 import os
 import matplotlib
-matplotlib.use("tkAgg")
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from modelo import persistencia
 from controlador import inventario_ctrl, ventas_ctrl
