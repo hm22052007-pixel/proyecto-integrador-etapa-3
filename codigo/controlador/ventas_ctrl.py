@@ -1,5 +1,5 @@
 from datetime import date
-from modelo.venta import Venta
+from modelo.venta import venta
 from modelo import persistencia
 from controlador import inventario_ctrl
 IMPUESTO = 0.13
@@ -15,7 +15,7 @@ def preparar_linea(codigo, cantidad, lineas):
     productos, _ = inventario_ctrl.cargar_inventario_limpio(guardar=False)
     producto = inventario_ctrl.buscar_producto(productos, codigo)
     if producto is None:
-        raise ValueError(f"No existe un producto con el código {codigo}.")
+        raise ValueError(f"No existe un producto con el codigo {codigo}.")
     cantidad = inventario_ctrl._a_entero(cantidad)
     if cantidad <= 0:
         raise ValueError("La cantidad debe ser un entero mayor que cero.")
@@ -49,7 +49,7 @@ def registrar_venta(lineas):
     filas = persistencia.cargar_ventas()
     subtotal = round(sum(l["subtotal"] for l in lineas), 2)
     impuestos = round(sum(l["impuestos"] for l in lineas), 2)
-    venta = Venta(
+    venta = venta(
         numero_factura=_siguiente_numero_factura(filas),
         fecha=date.today().isoformat(),
         lineas=lineas,
@@ -79,6 +79,20 @@ def clasificar_ventas():
             estado = "ilegible"
         clasificadas.append({"fila": fila, "estado": estado})
     return clasificadas
+def buscar_factura(numero):
+    numero = str(numero).strip()
+    filas = []
+    for item in clasificar_ventas():
+        if str(item["fila"].get("numero_factura", "")).strip() == numero:
+            filas.append(item["fila"])
+    return filas
+def consultar_ventas_dia(fecha=None):
+    fecha = str(fecha).strip() if fecha else date.today().isoformat()
+    filas = []
+    for item in clasificar_ventas():
+        if str(item["fila"].get("fecha", "")).startswith(fecha):
+            filas.append(item["fila"])
+    return filas
 def reporte_calidad_ventas():
     clasificadas = clasificar_ventas()
     return {
