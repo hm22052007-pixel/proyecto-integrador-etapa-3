@@ -1,5 +1,5 @@
 from datetime import date
-from modelo.venta import venta
+from modelo.venta import Venta
 from modelo import persistencia
 from controlador import inventario_ctrl
 IMPUESTO = 0.13
@@ -49,7 +49,7 @@ def registrar_venta(lineas):
     filas = persistencia.cargar_ventas()
     subtotal = round(sum(l["subtotal"] for l in lineas), 2)
     impuestos = round(sum(l["impuestos"] for l in lineas), 2)
-    venta = venta(
+    nueva_venta = Venta(
         numero_factura=_siguiente_numero_factura(filas),
         fecha=date.today().isoformat(),
         lineas=lineas,
@@ -61,9 +61,9 @@ def registrar_venta(lineas):
         producto = inventario_ctrl.buscar_producto(productos, linea["codigo"])
         producto["stock"] -= linea["cantidad"]
     persistencia.guardar_inventario(productos)
-    filas.extend(venta.a_filas())
+    filas.extend(nueva_venta.a_filas())
     persistencia.guardar_ventas(filas)
-    return venta
+    return nueva_venta
 def clasificar_ventas():
     filas = persistencia.cargar_ventas()
     clasificadas = []
