@@ -1,7 +1,7 @@
 codigo,nombre,categoria,stock,stock_minimo,precio_compra,precio_venta,fecha_vencimiento
-P001,Arroz 1 kg,Granos,25,20,900.0,1250.0,
-P002,Lenteja 1 kg,Granos,8,15,1100.0,1500.0,
-P003,Azúcar 1 kg,Abarrotes,86,12,700.0,1000.0,
+P001,Arroz 1 kg,Granos,30,20,900.0,1250.0,
+P002,Lenteja 1 kg,Granos,6,15,1100.0,1500.0,
+P003,Azúcar 1 kg,Abarrotes,83,12,700.0,1000.0,
 P004,Frijol negro 1 kg,Granos,60,15,1100.0,0.0,
 P005,Café molido 500 g,Bebidas,15,8,1800.0,2600.0,
 P006,Aceite vegetal 1 L,Aceites,30,10,2600.0,3400.0,
