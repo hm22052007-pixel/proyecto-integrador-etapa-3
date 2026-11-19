@@ -4,3 +4,5 @@ __pycache__/
 venv/
 .vscode/
 .idea/
+codigo/datos_respaldo/
+codigo/graficos/
