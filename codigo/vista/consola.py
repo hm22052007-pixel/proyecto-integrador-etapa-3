@@ -1,27 +1,17 @@
-"""VISTA - Todo lo que se muestra en pantalla y lo que se le pide al usuario."""
-
 ANCHO = 78
-
-
 def _linea(caracter="="):
     return caracter * ANCHO
-
-
 def _tabla(encabezados, filas, alineaciones=None):
-    """Imprime una tabla de texto con columnas alineadas."""
     if not filas:
         print("  (sin registros para mostrar)")
         return
-
     filas_texto = [[str(celda) for celda in fila] for fila in filas]
     anchos = [len(str(encabezado)) for encabezado in encabezados]
     for fila in filas_texto:
         for i, celda in enumerate(fila):
             anchos[i] = max(anchos[i], len(celda))
-
     if alineaciones is None:
         alineaciones = ["<"] * len(encabezados)
-
     def formatear(celdas):
         partes = []
         for celda, ancho, alineacion in zip(celdas, anchos, alineaciones):
@@ -32,48 +22,28 @@ def _tabla(encabezados, filas, alineaciones=None):
             else:
                 partes.append(celda.ljust(ancho))
         return "  ".join(partes).rstrip()
-
     print(formatear(encabezados))
     print("-" * len(formatear(encabezados)))
     for fila in filas_texto:
         print(formatear(fila))
-
-# Entrada de datos
 def pedir_texto(mensaje):
-    """Pide un dato al usuario y lo devuelve sin espacios sobrantes."""
     return input(mensaje).strip()
-
-
 def pedir_si_no(mensaje):
-    """Pide una confirmación. Devuelve True si la respuesta empieza con 's'."""
     respuesta = input(mensaje).strip().lower()
     return respuesta.startswith("s")
-
-
 def pausar(mensaje="\nPresione Enter para continuar..."):
-    """Detiene la pantalla para que el usuario pueda leer el resultado."""
     input(mensaje)
-
-# Mensajes
 def mostrar_titulo(titulo):
     print()
     print(_linea())
     print(titulo.center(ANCHO))
     print(_linea())
-
-
 def mostrar_info(mensaje):
     print(f"[INFO] {mensaje}")
-
-
 def mostrar_exito(mensaje):
     print(f"[OK] {mensaje}")
-
-
 def mostrar_error(mensaje):
     print(f"[ERROR] {mensaje}")
-
-
 def mostrar_menu_principal():
     print()
     print(_linea())
@@ -90,8 +60,6 @@ def mostrar_menu_principal():
     print("8. Generar reportes gráficos")
     print("9. Salir")
     print("-" * ANCHO)
-
-# Inventario
 def mostrar_inventario(productos, titulo="INVENTARIO ACTUAL"):
     print()
     print(titulo)
@@ -115,10 +83,7 @@ def mostrar_inventario(productos, titulo="INVENTARIO ACTUAL"):
         ["<", "<", "<", ">", ">", ">", ">", "<"],
     )
     print(f"\nTotal de productos mostrados: {len(productos)}")
-
-# Ventas
 def mostrar_resumen_venta(lineas):
-    """Muestra las líneas agregadas antes de confirmar la venta."""
     print()
     print("RESUMEN DE LA VENTA")
     print(_linea("-"))
@@ -142,10 +107,7 @@ def mostrar_resumen_venta(lineas):
     print(f"\nSubtotal:  ₡{subtotal:,.2f}")
     print(f"IVA (13%): ₡{impuestos:,.2f}")
     print(f"TOTAL:     ₡{subtotal + impuestos:,.2f}")
-
-
 def mostrar_factura(venta):
-    """Muestra la factura completa de una venta ya registrada."""
     print()
     print(_linea())
     print(f"FACTURA N° {venta.numero_factura}".center(ANCHO))
@@ -171,10 +133,7 @@ def mostrar_factura(venta):
     print(f"IVA (13%): ₡{venta.impuestos:,.2f}")
     print(f"TOTAL:     ₡{venta.total:,.2f}")
     print(_linea())
-
-
 def mostrar_ventas(clasificadas):
-    """Muestra el historial de ventas marcando las atípicas e ilegibles."""
     print()
     print("HISTORIAL DE VENTAS")
     print(_linea("-"))
@@ -201,8 +160,6 @@ def mostrar_ventas(clasificadas):
         ["<", "<", "<", ">", ">", "<"],
     )
     print(f"\nTotal de filas: {len(clasificadas)}")
-
-# Alertas y calidad
 def mostrar_alertas(reporte):
     print()
     print("ALERTAS DE INVENTARIO")
@@ -218,8 +175,6 @@ def mostrar_alertas(reporte):
     for alerta in reporte["alertas"]:
         tipo = "AGOTADO" if alerta["tipo_alerta"] == "agotado" else "STOCK BAJO"
         print(f"  [{tipo}] {alerta['mensaje']}")
-
-
 def mostrar_reporte_calidad(reporte_inventario, reporte_ventas):
     print()
     print("REPORTE DE CALIDAD DE DATOS")
@@ -232,7 +187,6 @@ def mostrar_reporte_calidad(reporte_inventario, reporte_ventas):
     print(f"Registros marcados:      {reporte_inventario['registros_marcados']}")
     print(f"Duplicados detectados:   {reporte_inventario['duplicados_detectados']}")
     print(f"Duplicados consolidados: {reporte_inventario.get('duplicados_consolidados', 0)}")
-
     print()
     print("VENTAS")
     print(_linea("-"))
@@ -240,7 +194,6 @@ def mostrar_reporte_calidad(reporte_inventario, reporte_ventas):
     print(f"Válidas:        {reporte_ventas['ventas_validas']}")
     print(f"Marcadas:       {reporte_ventas['ventas_marcadas']}")
     print(f"Ilegibles:      {reporte_ventas['ventas_ilegibles']}")
-
     mensajes = reporte_inventario.get("mensajes", []) + reporte_ventas.get("mensajes", [])
     if mensajes:
         print()
@@ -248,8 +201,6 @@ def mostrar_reporte_calidad(reporte_inventario, reporte_ventas):
         print(_linea("-"))
         for mensaje in mensajes:
             print(f"  - {mensaje}")
-
-
 def mostrar_rutas_graficos(rutas):
     print()
     print("GRÁFICOS GENERADOS")
